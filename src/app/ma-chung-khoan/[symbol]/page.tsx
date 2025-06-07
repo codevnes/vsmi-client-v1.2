@@ -375,23 +375,14 @@ const FINANCIAL_INDICATORS: Record<string, FinancialIndicator[]> = {
   ]
 };
 
-interface PageProps {
-  params: {
-    symbol: string;
-  };
-  searchParams?: Record<string, string | string[] | undefined>;
-}
-
-export default async function SymbolPage({ 
-  params,
-}: PageProps) {
-  const symbol = params.symbol.toUpperCase();
-  const fundamentalData = FUNDAMENTAL_DATA[symbol];
-  const technicalData = TECHNICAL_DATA[symbol];
-
+export default async function SymbolPage({ params }: { params: { symbol: string } }) {
+  // Ensure params is properly awaited in Next.js App Router
+  const { symbol } = await Promise.resolve(params);
+  const symbolUpperCase = symbol.toUpperCase();
+  
   // Sample data - in a real application, this would come from an API
   const stockData = {
-    symbol: symbol,
+    symbol: symbolUpperCase,
     price: 55500,
     profit: 800,
     volume: 4311900,
@@ -406,13 +397,19 @@ export default async function SymbolPage({
     }
   };
 
+  // Get fundamental data for this symbol or use a default if not found
+  const fundamentalData = FUNDAMENTAL_DATA[symbolUpperCase] || FUNDAMENTAL_DATA["VNM"];
+  
+  // Get technical data for this symbol or use a default if not found
+  const technicalData = TECHNICAL_DATA[symbolUpperCase] || TECHNICAL_DATA["VNM"];
+
   // Get financial indicators data for this symbol or use a default if not found
-  const financialData = FINANCIAL_INDICATORS[symbol] || FINANCIAL_INDICATORS["VNM"];
+  const financialData = FINANCIAL_INDICATORS[symbolUpperCase] || FINANCIAL_INDICATORS["VNM"];
 
   // Sample trading recommendation data
   const tradingRecommendationData = {
     id: "5bbe0774-45d1-498e-a7b1-d74c86b88ca9",
-    symbol: symbol,
+    symbol: symbolUpperCase,
     analysisDate: "2025-05-06T00:00:00.000Z",
     inputData: {
       data: [
@@ -531,7 +528,7 @@ export default async function SymbolPage({
           ultimateOscillator: 50.13842744085517
         }
       ],
-      symbol: symbol
+      symbol: symbolUpperCase
     },
     analysisResult: "1. **Khuyến nghị giao dịch:**\n   - **Khuyến nghị:** Quan sát/chờ mua\n   - **Lý do:** Các chỉ số MACD và Stochastic cho thấy sự phục hồi nhẹ nhưng RSI vẫn dưới 50, cho thấy sức mạnh tăng giá chưa rõ ràng. ADX dưới 25 cho thấy xu hướng không mạnh.\n   - **Vùng giá mua:** Khoảng 38000, gần SMA20 và EMA20 hiện tại.\n   - **Cắt lỗ:** Dưới 37750, mức thấp nhất gần đây.\n   - **Cảnh báo rủi ro:** MACD Histogram đang thu hẹp, cho thấy động lượng tăng có thể không bền vững.\n\n2. **Kết luận tổng hợp:**\n   - **Vùng giá & khối lượng:** Giá đóng cửa dao động từ 37900 đến 38300 trong các phiên gần nhất với khối lượng tăng dần, cho thấy sự quan tâm nhất định từ thị trường nhưng chưa đủ mạnh.\n   - **Động lượng:** MACD và Stochastic cho thấy sự phục hồi nhẹ nhưng RSI vẫn dưới 50, cho thấy sức mạnh tăng giá chưa rõ ràng. ADX dưới 25 cho thấy xu hướng không mạnh.\n   - **Xu hướng:** ADX thấp cho thấy xu hướng yếu, Plus DI và Minus DI không cho thấy sự ưu thế rõ ràng của phe mua hoặc bán.\n   - **Đường trung bình:** Giá hiện tại gần SMA20 và EMA20, cho thấy mức hỗ trợ ngắn hạn. Giá dưới SMA50 và SMA100 cho thấy xu hướng trung và dài hạn vẫn còn yếu.\n   - **Ichimoku:** Giá dưới BaseLine cho thấy xu hướng hiện tại không mạnh.\n   - **Tổng hợp chung:** Cổ phiếu DHA hiện tại trong trạng thái không rõ ràng với xu hướng yếu và động lượng không mạnh mẽ, cần quan sát thêm trước khi đưa ra quyết định mua mạnh.",
     tradingRecommendation: "**",
@@ -550,7 +547,7 @@ export default async function SymbolPage({
       <TradingRecommendation {...tradingRecommendationData} />
 
       {/* Financial Analysis */}
-      <FinancialAnalysis data={financialData} symbol={symbol} />
+      <FinancialAnalysis data={financialData} symbol={symbolUpperCase} />
 
       {/* Fundamental Analysis */}
       <FundamentalAnalysis {...fundamentalData} />
