@@ -375,20 +375,16 @@ const FINANCIAL_INDICATORS: Record<string, FinancialIndicator[]> = {
   ]
 };
 
-const PageProps = {
-  params: {
-    symbol: ""
-  }
-}
-
-type Props = {
+interface PageProps {
   params: {
     symbol: string;
   };
-  searchParams: { [key: string]: string | string[] | undefined };
-};
+  searchParams?: Record<string, string | string[] | undefined>;
+}
 
-export default async function SymbolPage({ params }: Props) {
+export default async function SymbolPage({ 
+  params,
+}: PageProps) {
   const symbol = params.symbol.toUpperCase();
   const fundamentalData = FUNDAMENTAL_DATA[symbol];
   const technicalData = TECHNICAL_DATA[symbol];
