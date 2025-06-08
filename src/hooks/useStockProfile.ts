@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { StockProfile, fetchStockProfile } from '@/services/stockProfileService';
+import { StockProfile, fetchStockData, extractStockProfile } from '@/services/stockService';
 
 /**
  * Custom hook to fetch and manage stock profile data
@@ -21,7 +21,8 @@ export function useStockProfile(symbol: string) {
       setError(null);
       
       try {
-        const stockProfileData = await fetchStockProfile(symbol);
+        const stockData = await fetchStockData(symbol);
+        const stockProfileData = extractStockProfile(stockData);
         
         if (isMounted) {
           setData(stockProfileData);

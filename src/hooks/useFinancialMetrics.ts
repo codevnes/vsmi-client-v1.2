@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { FinancialIndicator, fetchFinancialIndicators } from '@/services/financialMetricsService';
+import { FinancialIndicator, fetchStockData, extractFinancialIndicators } from '@/services/stockService';
 
 /**
  * Custom hook to fetch and manage financial metrics data
@@ -21,7 +21,8 @@ export function useFinancialMetrics(symbol: string) {
       setError(null);
       
       try {
-        const financialData = await fetchFinancialIndicators(symbol);
+        const stockData = await fetchStockData(symbol);
+        const financialData = extractFinancialIndicators(stockData);
         
         if (isMounted) {
           setData(financialData);

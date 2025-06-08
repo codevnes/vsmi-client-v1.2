@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { TradingRecommendation, fetchTradingRecommendation } from '@/services/tradingRecommendationService';
+import { TradingRecommendation, fetchStockData, extractTradingRecommendation } from '@/services/stockService';
 
 /**
  * Custom hook to fetch and manage trading recommendation data
@@ -21,7 +21,8 @@ export function useTradingRecommendation(symbol: string) {
       setError(null);
       
       try {
-        const recommendationData = await fetchTradingRecommendation(symbol);
+        const stockData = await fetchStockData(symbol);
+        const recommendationData = extractTradingRecommendation(stockData);
         
         if (isMounted) {
           setData(recommendationData);

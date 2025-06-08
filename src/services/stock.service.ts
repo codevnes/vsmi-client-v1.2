@@ -1,7 +1,7 @@
 import { Stock, StockDetail, StockListResponse, StockDetailResponse, StockSearchParams } from "@/types/stock";
+import { API_BASE_URL } from "@/config/api";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3030/api";
-
+const API_URL = `${API_BASE_URL}/api`;
 
 export const stockService = {
   /**

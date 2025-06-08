@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useCallback } from "react";
 import Image from "next/image";
-import Link from "next/link";
 import { useKeenSlider } from "keen-slider/react";
 import "keen-slider/keen-slider.min.css";
 
@@ -19,7 +18,7 @@ const newsData = [
     description: "Thị trường chứng khoán ngày hôm nay ghi nhận sự tăng điểm ấn tượng khi nhóm cổ phiếu ngân hàng đồng loạt bứt phá mạnh mẽ.",
     image: "https://images.unsplash.com/photo-1590283603385-17ffb3a7f29f?q=80&w=800&auto=format&fit=crop",
     category: "Thị trường",
-    date: "12/6/2023",
+    date: "12/5/2025",
     time: "15:30",
     url: "/news/1"
   },
@@ -29,7 +28,7 @@ const newsData = [
     description: "Mùa báo cáo tài chính đang đến gần, nhiều doanh nghiệp dự kiến công bố kết quả kinh doanh trong tuần tới.",
     image: "https://images.unsplash.com/photo-1579225663317-c0251b4369bc?q=80&w=800&auto=format&fit=crop",
     category: "Phân tích",
-    date: "11/6/2023",
+    date: "11/5/2025",
     time: "09:45",
     url: "/news/2"
   },
@@ -39,7 +38,7 @@ const newsData = [
     description: "Tuần qua, khối ngoại bán ròng hơn 1,200 tỷ đồng trên 3 sàn chứng khoán, tập trung chủ yếu vào các cổ phiếu vốn hóa lớn.",
     image: "https://images.unsplash.com/photo-1526628953301-3e589a6a8b74?q=80&w=800&auto=format&fit=crop",
     category: "Khối ngoại",
-    date: "10/6/2023",
+    date: "10/5/2025",
     time: "14:15",
     url: "/news/3"
   },
@@ -49,7 +48,7 @@ const newsData = [
     description: "Vàng tiếp tục xu hướng tăng giá khi căng thẳng địa chính trị leo thang, tạo ra áp lực lên thị trường chứng khoán.",
     image: "https://images.unsplash.com/photo-1610375461246-83df859d849d?q=80&w=800&auto=format&fit=crop",
     category: "Thị trường",
-    date: "09/6/2023",
+    date: "09/5/2025",
     time: "10:20",
     url: "/news/4"
   },
@@ -59,7 +58,7 @@ const newsData = [
     description: "Số liệu mới công bố từ Tổng cục Thống kê cho thấy nền kinh tế Việt Nam đang phục hồi tốt hơn dự kiến, hỗ trợ tích cực cho thị trường chứng khoán.",
     image: "https://images.unsplash.com/photo-1604594849809-dfedbc827105?q=80&w=800&auto=format&fit=crop",
     category: "Kinh tế vĩ mô",
-    date: "08/6/2023",
+    date: "08/5/2025",
     time: "16:45",
     url: "/news/5"
   },
@@ -69,7 +68,7 @@ const newsData = [
     description: "Các chuyên gia phân tích cho rằng đây có thể là thời điểm tốt để tích lũy cổ phiếu bán lẻ chất lượng với định giá hấp dẫn.",
     image: "https://images.unsplash.com/photo-1601924582970-9238bcb495d9?q=80&w=800&auto=format&fit=crop",
     category: "Phân tích",
-    date: "07/6/2023",
+    date: "07/5/2025",
     time: "11:30",
     url: "/news/6"
   },
@@ -79,7 +78,7 @@ const newsData = [
     description: "Sự trở lại của dòng tiền đã giúp VN-Index tăng điểm tích cực với thanh khoản tăng hơn 15% so với phiên trước.",
     image: "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?q=80&w=800&auto=format&fit=crop",
     category: "Thị trường",
-    date: "15/6/2023",
+    date: "15/5/2025",
     time: "16:30",
     url: "/news/7"
   },
@@ -89,7 +88,7 @@ const newsData = [
     description: "Các chuyên gia chia sẻ chiến lược phân bổ tài sản và lựa chọn cổ phiếu trong môi trường lãi suất thay đổi.",
     image: "https://images.unsplash.com/photo-1590283603385-17ffb3a7f29f?q=80&w=800&auto=format&fit=crop",
     category: "Phân tích",
-    date: "14/6/2023",
+    date: "14/5/2025",
     time: "10:15",
     url: "/news/8"
   }
@@ -216,7 +215,7 @@ export function LatestNews() {
           <div ref={sliderRef} className="keen-slider">
             {newsData.map((news) => (
               <div key={news.id} className="keen-slider__slide">
-                <Link href={news.url} className="block h-full group">
+                <div className="block h-full group">
                   <div className="h-full bg-white border border-neutral-200 rounded-md overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300">
                     <div className="relative h-40 overflow-hidden">
                       <Image
@@ -251,7 +250,7 @@ export function LatestNews() {
                       </p>
                     </div>
                   </div>
-                </Link>
+                </div>
               </div>
             ))}
           </div>

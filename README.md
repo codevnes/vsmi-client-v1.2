@@ -2,7 +2,14 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 
 ## Getting Started
 
-First, run the development server:
+First, set up your environment variables:
+
+```bash
+# Create a .env.local file in the root directory
+echo "NEXT_PUBLIC_API_BASE_URL=http://localhost:3030" > .env.local
+```
+
+Then, run the development server:
 
 ```bash
 npm run dev
@@ -19,6 +26,16 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+
+## Environment Variables
+
+The following environment variables are required:
+
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `NEXT_PUBLIC_API_BASE_URL` | The base URL for the API | `http://localhost:3030` |
+
+For production deployment, make sure to set these variables in your hosting environment.
 
 ## Learn More
 
