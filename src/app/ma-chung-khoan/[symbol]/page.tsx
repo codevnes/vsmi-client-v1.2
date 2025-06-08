@@ -5,7 +5,7 @@ import { FinancialAnalysis } from "@/components/ui/financial-analysis";
 import { TradingRecommendation } from "@/components/ui/trading-recommendation";
 import { FScoreAnalysisContainer } from "@/components/FScoreAnalysisContainer";
 import { TECHNICAL_DATA } from "@/lib/mock-data";
-import { fetchStockData, extractStockProfile, extractFinancialIndicators, extractTradingRecommendation, extractFundamentalData } from "@/services/stockDataService";
+import { fetchStockData, extractStockProfile, extractFinancialIndicators, extractTradingRecommendation, extractFundamentalData } from "@/services/stockService";
 
 export default async function SymbolPage({ params }: { params: { symbol: string } }) {
   // Ensure params is properly awaited in Next.js App Router

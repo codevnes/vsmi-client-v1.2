@@ -1,6 +1,6 @@
 import { FScoreAnalysisData, FScoreRawData } from "@/types/fscore";
 import { prepareFScoreData } from "@/lib/fscore-utils";
-import { fetchStockData, extractFScoreAnalysis } from "./stockDataService";
+import { fetchStockData, extractFScoreAnalysis } from "./stockService";
 
 export const fscoreService = {
   /**

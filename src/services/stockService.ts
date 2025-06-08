@@ -1,8 +1,67 @@
-import { StockProfile } from "./stockProfileService";
-import { FinancialIndicator } from "./financialMetricsService";
-import { TradingRecommendation } from "./tradingRecommendationService";
+import { API_ENDPOINTS } from "@/config/api";
 import { FundamentalDataType } from "@/lib/mock-data";
 
+// Stock Profile Types
+export interface StockProfile {
+  symbol: string;
+  price: number;
+  profit: number;
+  volume: number;
+  pe: number;
+  eps: number;
+  roa: number;
+  roe: number;
+  stock: {
+    name: string;
+    exchange: string;
+    industry: string;
+  };
+}
+
+// Financial Indicator Types
+export interface FinancialIndicator {
+  id: string;
+  symbol: string;
+  year: number;
+  quarter: number | null;
+  eps: number;
+  epsIndustry: number | null;
+  pe: number | null;
+  peIndustry: number | null;
+  roa: number;
+  roe: number;
+  roaIndustry: number | null;
+  roeIndustry: number | null;
+  revenue: number | null;
+  margin: number | null;
+  totalDebtToEquity: number;
+  totalAssetsToEquity: number;
+  createdAt: string;
+  updatedAt: string;
+  stock: {
+    name: string;
+    exchange: string;
+  };
+}
+
+// Trading Recommendation Types
+export interface TradingRecommendation {
+  id: string;
+  symbol: string;
+  analysisDate: string;
+  inputData: {
+    data: any[];
+    symbol: string;
+  };
+  analysisResult: string;
+  tradingRecommendation: string;
+  suggestedBuyRange: string;
+  stopLossLevel: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+// F-Score Analysis Types
 export interface FScoreAnalysisRaw {
   id: string;
   symbol: string;
@@ -16,6 +75,7 @@ export interface FScoreAnalysisRaw {
   updatedAt: string;
 }
 
+// Combined Stock Data Type
 export interface StockData {
   message: string;
   data: {
@@ -51,7 +111,7 @@ export interface StockData {
  */
 export async function fetchStockData(symbol: string): Promise<StockData> {
   try {
-    const response = await fetch(`http://localhost:3030/api/stock-profiles/${symbol}`, { 
+    const response = await fetch(API_ENDPOINTS.stockProfile(symbol), { 
       cache: 'no-store' 
     });
     
