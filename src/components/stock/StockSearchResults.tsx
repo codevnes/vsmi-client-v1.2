@@ -13,6 +13,7 @@ interface StockSearchResultsProps {
   searchQuery: string;
   popularSearches?: string[];
   onPopularSearchClick?: (term: string) => void;
+  compact?: boolean;
 }
 
 export function StockSearchResults({ 
@@ -21,7 +22,8 @@ export function StockSearchResults({
   onResultClick,
   searchQuery,
   popularSearches = ["VNM", "FPT", "VHM", "VIC", "VCB", "BID", "MSN"],
-  onPopularSearchClick
+  onPopularSearchClick,
+  compact = false
 }: StockSearchResultsProps) {
   const containerVariants = {
     hidden: { opacity: 0, y: -5 },
@@ -49,15 +51,15 @@ export function StockSearchResults({
   if (isLoading) {
     return (
       <motion.div 
-        className="absolute top-full left-0 right-0 bg-white mt-1 rounded-lg shadow-lg z-50 max-h-80 overflow-y-auto p-2"
+        className={`absolute top-full left-0 right-0 bg-white mt-1 rounded-lg shadow-lg z-50 max-h-80 overflow-y-auto ${compact ? 'p-1' : 'p-2'}`}
         initial="hidden"
         animate="visible"
         exit="exit"
         variants={containerVariants}
       >
-        <div className="p-6 flex flex-col items-center justify-center space-y-2">
-          <div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-          <p className="text-sm text-neutral-500">Đang tìm kiếm...</p>
+        <div className={`flex flex-col items-center justify-center space-y-2 ${compact ? 'p-4' : 'p-6'}`}>
+          <div className="w-6 h-6 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+          <p className="text-xs text-neutral-500">Đang tìm kiếm...</p>
         </div>
       </motion.div>
     );
@@ -74,7 +76,7 @@ export function StockSearchResults({
           exit="exit"
           variants={containerVariants}
         >
-          <div className="p-4">
+          <div className={compact ? "p-2" : "p-4"}>
             <h3 className="text-sm font-medium text-neutral-700 mb-3">Tìm kiếm phổ biến</h3>
             <div className="flex flex-wrap gap-2">
               {popularSearches.map((term) => (
@@ -99,17 +101,17 @@ export function StockSearchResults({
     return (
       <AnimatePresence>
         <motion.div 
-          className="absolute top-full left-0 right-0 bg-white mt-1 rounded-lg shadow-lg z-50 p-2"
+          className={`absolute top-full left-0 right-0 bg-white mt-1 rounded-lg shadow-lg z-50 ${compact ? 'p-1' : 'p-2'}`}
           initial="hidden"
           animate="visible"
           exit="exit"
           variants={containerVariants}
         >
-          <div className="p-6 text-center">
-            <div className="flex justify-center mb-3">
-              <Search className="h-10 w-10 text-neutral-300" />
+          <div className={`text-center ${compact ? 'p-4' : 'p-6'}`}>
+            <div className="flex justify-center mb-2">
+              <Search className={`${compact ? 'h-8 w-8' : 'h-10 w-10'} text-neutral-300`} />
             </div>
-            <p className="text-sm text-neutral-500 mb-1">Không tìm thấy kết quả</p>
+            <p className="text-xs text-neutral-500 mb-1">Không tìm thấy kết quả</p>
             <p className="text-xs text-neutral-400">Thử tìm kiếm với từ khóa khác</p>
           </div>
         </motion.div>
@@ -126,12 +128,12 @@ export function StockSearchResults({
         exit="exit"
         variants={containerVariants}
       >
-        <ul className="py-2">
+        <ul className={compact ? "py-1" : "py-2"}>
           {results.map((stock) => (
             <motion.li key={stock.symbol} variants={itemVariants}>
               <Link 
                 href={`/ma-chung-khoan/${stock.symbol}`} 
-                className="flex items-center px-4 py-3 hover:bg-neutral-50 transition-colors"
+                className={`flex items-center ${compact ? 'px-3 py-2' : 'px-4 py-3'} hover:bg-neutral-50 transition-colors`}
                 onClick={onResultClick}
               >
                 <div className="flex-1">

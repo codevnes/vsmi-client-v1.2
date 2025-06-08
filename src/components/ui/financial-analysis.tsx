@@ -87,11 +87,34 @@ const fadeIn = {
 export function FinancialAnalysis({ data, symbol }: FinancialAnalysisProps) {
     const [viewType, setViewType] = useState<"year" | "quarter">("year")
 
+    // Ensure data is an array
+    const financialData = Array.isArray(data) ? data : [];
+    
+    // If data is empty, show a placeholder message
+    if (financialData.length === 0) {
+        return (
+            <div className="space-y-6">
+                <div className="flex items-center">
+                    <div className="w-1 h-8 bg-slate-800 rounded-full mr-4"></div>
+                    <div>
+                        <h2 className="text-2xl font-bold text-slate-800">Phân tích chỉ số tài chính</h2>
+                        <p className="text-sm text-slate-500 mt-1">Không có dữ liệu</p>
+                    </div>
+                </div>
+                <Card>
+                    <CardContent className="p-6 flex flex-col items-center justify-center min-h-[200px]">
+                        <p className="text-slate-500">Không có dữ liệu tài chính cho cổ phiếu {symbol}</p>
+                    </CardContent>
+                </Card>
+            </div>
+        )
+    }
+
     // Filter data based on the view type
-    const yearlyData = data.filter(item => item.quarter === null)
+    const yearlyData = financialData.filter(item => item.quarter === null)
         .sort((a, b) => a.year - b.year)
 
-    const quarterlyData = data.filter(item => item.quarter !== null)
+    const quarterlyData = financialData.filter(item => item.quarter !== null)
         .sort((a, b) => {
             if (a.year !== b.year) return a.year - b.year
             return (a.quarter || 0) - (b.quarter || 0)
@@ -104,8 +127,8 @@ export function FinancialAnalysis({ data, symbol }: FinancialAnalysisProps) {
     }))
 
     // Get the most recent date for "updated at" display
-    const lastUpdated = data.length > 0 
-        ? new Date(data.sort((a, b) => 
+    const lastUpdated = financialData.length > 0 
+        ? new Date(financialData.sort((a, b) => 
             new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
         )[0].updatedAt).toLocaleDateString('vi-VN') 
         : '';

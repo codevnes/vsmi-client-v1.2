@@ -1,12 +1,7 @@
-import { type ClassValue, clsx } from "clsx"
-import { twMerge } from "tailwind-merge"
-
-export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs))
-}
+import { FScoreAnalysisData, FScoreRawData } from "@/types/fscore";
 
 // Function to prepare F-Score data for the component
-export function prepareFScoreData(data: any) {
+export function prepareFScoreData(data: FScoreRawData): FScoreAnalysisData | null {
   const fScore = data?.inputData?.fScore;
   
   if (!fScore) {
@@ -97,7 +92,7 @@ export function prepareFScoreData(data: any) {
   // Extract SWOT analysis from the analysis result
   const analysisResult = data.analysisResult || '';
   
-  // Attempt to extract SWOT from analysis result (simplified approach)
+  // Attempt to extract SWOT from analysis result
   const strengths = extractSWOTSection(analysisResult, "Điểm mạnh");
   const weaknesses = extractSWOTSection(analysisResult, "Điểm yếu");
   const opportunities = extractSWOTSection(analysisResult, "Cơ hội");
@@ -118,22 +113,35 @@ export function prepareFScoreData(data: any) {
     peIndustry,
     categories,
     swot,
-    fullAnalysis: analysisResult
+    fullAnalysis: analysisResult,
+    tradingRecommendation: data.tradingRecommendation,
+    suggestedBuyRange: data.suggestedBuyRange,
+    stopLossLevel: data.stopLossLevel
   };
 }
 
 // Helper function to extract SWOT sections from analysis result
 function extractSWOTSection(text: string, sectionName: string): string[] {
-  const pattern = new RegExp(`\\*\\*${sectionName}\\*\\*: (.+?)(?=\\*\\*|$)`, 's');
-  const match = text.match(pattern);
+  // Look for patterns like "**Điểm mạnh**: Item1, Item2" or similar formats
+  const patterns = [
+    // Format: **Điểm mạnh**: Item1, Item2.
+    new RegExp(`\\*\\*${sectionName}\\*\\*:([^\\*\\n]+?)(?=\\*\\*|\\n\\n|$)`, 's'),
+    // Format: - **Điểm mạnh**: Item1, Item2.
+    new RegExp(`- \\*\\*${sectionName}\\*\\*:([^\\*\\n]+?)(?=\\n\\s*-|\\n\\n|$)`, 's'),
+    // Format in numbered list: - **Điểm mạnh**: Item1, Item2.
+    new RegExp(`\\d+\\.\\s*\\*\\*${sectionName}\\*\\*:([^\\*\\n]+?)(?=\\d+\\.|\\n\\n|$)`, 's')
+  ];
   
-  if (match && match[1]) {
-    // Split by bullet points or commas and clean up
-    return match[1]
-      .split(/[,.]/)
-      .map(item => item.trim())
-      .filter(item => item.length > 0);
+  for (const pattern of patterns) {
+    const match = text.match(pattern);
+    if (match && match[1]) {
+      // Split by bullet points, commas or periods and clean up
+      return match[1]
+        .split(/[,.;]/)
+        .map(item => item.trim())
+        .filter(item => item.length > 0);
+    }
   }
   
   return [];
-}
+} 

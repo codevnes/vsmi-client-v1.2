@@ -48,7 +48,6 @@ export function StockSearch() {
       try {
         const stocks = await stockService.searchStocks(debouncedQuery, 7);
         setResults(stocks);
-        console.log("Search results:", stocks);
       } catch (error) {
         console.error("Error searching stocks:", error);
       } finally {
@@ -90,7 +89,7 @@ export function StockSearch() {
   return (
     <div ref={searchRef} className="relative w-full">
       <motion.div 
-        className="flex items-center bg-neutral-100 rounded-lg overflow-hidden w-full"
+        className="flex items-center bg-neutral-100 rounded-lg overflow-hidden w-full shadow-sm"
         whileFocus={{ boxShadow: "0 0 0 2px rgba(59, 130, 246, 0.5)" }}
         animate={isFocused ? { 
           boxShadow: "0 4px 12px rgba(0, 0, 0, 0.08)",
@@ -101,12 +100,12 @@ export function StockSearch() {
         transition={{ duration: 0.2 }}
         style={{ border: isFocused ? "1px solid #e5e7eb" : "1px solid transparent" }}
       >
-        <SearchIcon className="absolute left-3 text-neutral-500 h-4 w-4" />
+        <SearchIcon className="absolute left-4 text-neutral-500 h-4 w-4" />
         <Input
           ref={inputRef}
           type="search"
           placeholder="Tìm kiếm cổ phiếu..."
-          className="border-none bg-transparent h-10 pl-9 pr-9 w-full focus-visible:ring-0 placeholder:text-neutral-400"
+          className="border-none bg-transparent h-11 pl-10 pr-10 w-full focus-visible:ring-0 placeholder:text-neutral-400 text-sm"
           value={query}
           onChange={handleInputChange}
           onFocus={handleInputFocus}
@@ -116,7 +115,7 @@ export function StockSearch() {
             type="button"
             variant="ghost"
             size="sm"
-            className="absolute right-1 h-8 w-8 p-0 rounded-full"
+            className="absolute right-2 h-8 w-8 p-0 rounded-full"
             onClick={handleClearInput}
           >
             <X className="h-4 w-4 text-neutral-400" />

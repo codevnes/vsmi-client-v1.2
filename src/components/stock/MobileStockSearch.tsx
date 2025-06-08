@@ -1,14 +1,13 @@
 "use client";
 
 import * as React from "react";
-import { Search as SearchIcon, X } from "lucide-react";
+import { Search as SearchIcon, X, History } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { StockSearchResults } from "./StockSearchResults";
 import { Stock } from "@/types/stock";
 import { stockService } from "@/services/stock.service";
 import { useDebounce } from "@/hooks/useDebounce";
-import { motion } from "framer-motion";
 
 export function MobileStockSearch({ onClose }: { onClose?: () => void }) {
   const [query, setQuery] = React.useState("");
@@ -30,9 +29,8 @@ export function MobileStockSearch({ onClose }: { onClose?: () => void }) {
 
       setIsLoading(true);
       try {
-        const stocks = await stockService.searchStocks(debouncedQuery, 7);
+        const stocks = await stockService.searchStocks(debouncedQuery, 5);
         setResults(stocks);
-        console.log("Mobile search results:", stocks);
       } catch (error) {
         console.error("Error searching stocks:", error);
       } finally {
@@ -68,19 +66,14 @@ export function MobileStockSearch({ onClose }: { onClose?: () => void }) {
   };
 
   return (
-    <div className="w-full relative">
-      <motion.div 
-        className="relative flex items-center bg-white rounded-lg overflow-hidden w-full mb-2 border border-neutral-200"
-        initial={{ opacity: 0, y: -10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3 }}
-      >
-        <SearchIcon className="absolute left-3 text-neutral-500 h-4 w-4" />
+    <div className="w-full relative px-2">
+      <div className="relative flex items-center bg-white rounded-lg overflow-hidden w-full mb-2 border border-neutral-200">
+        <SearchIcon className="absolute left-2.5 text-neutral-500 h-4 w-4" />
         <Input
           ref={inputRef}
           type="search"
           placeholder="Tìm kiếm cổ phiếu..."
-          className="border-none bg-transparent h-11 pl-9 pr-9 w-full focus-visible:ring-0 placeholder:text-neutral-400"
+          className="border-none bg-transparent h-10 pl-8 pr-8 w-full focus-visible:ring-0 placeholder:text-neutral-400 text-sm"
           value={query}
           onChange={handleInputChange}
           autoFocus
@@ -90,23 +83,46 @@ export function MobileStockSearch({ onClose }: { onClose?: () => void }) {
             type="button"
             variant="ghost"
             size="sm"
-            className="absolute right-1 h-8 w-8 p-0 rounded-full"
+            className="absolute right-1 h-7 w-7 p-0 rounded-full"
             onClick={handleClearInput}
           >
-            <X className="h-4 w-4 text-neutral-400" />
+            <X className="h-3.5 w-3.5 text-neutral-400" />
             <span className="sr-only">Clear search</span>
           </Button>
         )}
-      </motion.div>
+      </div>
       
-      <StockSearchResults 
-        results={results} 
-        isLoading={isLoading || debouncedQuery !== query}
-        onResultClick={handleResultClick}
-        searchQuery={query}
-        popularSearches={popularSearches}
-        onPopularSearchClick={handlePopularSearchClick}
-      />
+      {!query.trim() && (
+        <div className="p-2 pb-0">
+          <div className="flex items-center gap-1.5 mb-2">
+            <History className="h-3.5 w-3.5 text-neutral-500" />
+            <span className="text-xs font-medium text-neutral-700">Tìm kiếm phổ biến</span>
+          </div>
+          <div className="flex flex-wrap gap-1.5">
+            {popularSearches.map((term) => (
+              <button
+                key={term}
+                className="px-2.5 py-1 bg-neutral-100 hover:bg-neutral-200 rounded-full text-xs font-medium transition-colors"
+                onClick={() => handlePopularSearchClick(term)}
+              >
+                {term}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+      
+      {(query.trim() || isLoading) && (
+        <StockSearchResults 
+          results={results} 
+          isLoading={isLoading || debouncedQuery !== query}
+          onResultClick={handleResultClick}
+          searchQuery={query}
+          popularSearches={popularSearches}
+          onPopularSearchClick={handlePopularSearchClick}
+          compact={true}
+        />
+      )}
     </div>
   );
 } 
