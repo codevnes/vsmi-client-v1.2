@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { StockSearchResults } from "./StockSearchResults";
 import { Stock } from "@/types/stock";
-import { stockService } from "@/services/stock.service";
+import { stockService } from "@/services/stockService";
 import { useDebounce } from "@/hooks/useDebounce";
 import { motion } from "framer-motion";
 

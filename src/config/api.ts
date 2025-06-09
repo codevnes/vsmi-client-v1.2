@@ -11,4 +11,5 @@ export const API_ENDPOINTS = {
   financialMetrics: (symbol: string) => `${API_BASE_URL}/api/financial-metrics/${symbol}`,
   tradingRecommendation: (symbol: string) => `${API_BASE_URL}/api/chatgpt-analyses/${symbol}`,
   fscoreAnalysis: (symbol: string) => `${API_BASE_URL}/api/fscore-analyses/${symbol}`,
+  stockPrices: (symbol: string) => `${API_BASE_URL}/api/stock-prices/${symbol}`,
 }; 

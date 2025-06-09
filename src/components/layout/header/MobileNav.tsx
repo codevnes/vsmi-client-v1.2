@@ -7,6 +7,7 @@ import { usePathname } from 'next/navigation';
 interface NavItem {
   title: string;
   href: string;
+  isDevelopment?: boolean;
 }
 
 interface MobileNavProps {
@@ -56,7 +57,17 @@ export function MobileNav({ navItems, onNavItemClick }: MobileNavProps) {
               onClick={onNavItemClick}
             >
               {getIcon(item.href)}
-              <span className="font-medium">{item.title}</span>
+              <div className="relative font-medium">
+                {item.title}
+                {item.isDevelopment && (
+                  <span className="absolute -top-1 -right-1.5 w-1.5 h-1.5 bg-amber-500 rounded-full"></span>
+                )}
+              </div>
+              {item.isDevelopment && (
+                <span className="ml-2 text-xs py-0.5 px-1.5 rounded bg-amber-100 text-amber-800">
+                  Beta
+                </span>
+              )}
             </Link>
           );
         })}

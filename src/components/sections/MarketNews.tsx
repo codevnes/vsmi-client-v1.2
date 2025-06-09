@@ -5,60 +5,8 @@ import "keen-slider/keen-slider.min.css";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { formatDistanceToNow } from "date-fns";
 import { ChevronLeft, ChevronRight, Circle, CircleDot } from "lucide-react";
-
-// Mock data - should be moved to a separate file or API call in production
-const marketNewsData = [
-    {
-        id: 1,
-        content: "Thị trường chứng khoán Việt Nam tăng điểm mạnh phiên thứ 3 liên tiếp. Khối ngoại mua ròng hơn 500 tỷ đồng. Các cổ phiếu ngân hàng dẫn dắt đà tăng của thị trường.",
-        publishedAt: new Date(Date.now() - 1000 * 60 * 60 * 2) // 2 hours ago
-    },
-    {
-        id: 2,
-        content: "FED giữ nguyên lãi suất trong cuộc họp mới nhất. Thị trường dự báo có thể giảm lãi suất vào cuối năm nay. Đồng USD suy yếu sau quyết định của FED.",
-        publishedAt: new Date(Date.now() - 1000 * 60 * 60 * 5) // 5 hours ago
-    },
-    {
-        id: 3,
-        content: "Giá dầu tăng mạnh do căng thẳng địa chính trị ở Trung Đông. Các cổ phiếu dầu khí ghi nhận mức tăng ấn tượng. Nhà đầu tư đang quan tâm đến nhóm cổ phiếu hưởng lợi từ giá dầu.",
-        publishedAt: new Date(Date.now() - 1000 * 60 * 60 * 8) // 8 hours ago
-    },
-    {
-        id: 4,
-        content: "TTCK Châu Á đồng loạt tăng điểm sau số liệu kinh tế tích cực từ Trung Quốc. Giá vàng tiếp tục neo ở mức cao kỷ lục. Nhà đầu tư kỳ vọng vào chính sách kích thích kinh tế mới.",
-        publishedAt: new Date(Date.now() - 1000 * 60 * 60 * 12) // 12 hours ago
-    },
-    {
-        id: 5,
-        content: "Khối ngoại bán ròng phiên thứ 2 liên tiếp trên HOSE. VN-Index giảm nhẹ do áp lực chốt lời. Thanh khoản thị trường duy trì ở mức trung bình so với 20 phiên gần nhất.",
-        publishedAt: new Date(Date.now() - 1000 * 60 * 60 * 24) // 1 day ago
-    },
-    {
-        id: 6,
-        content: "Cổ phiếu công nghệ dẫn đầu đà tăng trên thị trường toàn cầu. Các nhà đầu tư lạc quan về triển vọng lợi nhuận trong quý tới. Chỉ số Nasdaq thiết lập đỉnh cao mới.",
-        publishedAt: new Date(Date.now() - 1000 * 60 * 60 * 36) // 36 hours ago
-    },
-    {
-        id: 7,
-        content: "Thị trường Bitcoin ghi nhận biến động mạnh sau tin tức về quy định mới. Giá tiền ảo giảm hơn 5% trong 24 giờ qua. Nhà đầu tư thận trọng chờ đợi diễn biến tiếp theo.",
-        publishedAt: new Date(Date.now() - 1000 * 60 * 60 * 48) // 2 days ago
-    },
-    {
-        id: 8,
-        content: "Ngân hàng Trung ương Châu Âu công bố chính sách tiền tệ mới. Euro tăng giá so với USD. Thị trường chứng khoán Châu Âu phản ứng tích cực với quyết định này.",
-        publishedAt: new Date(Date.now() - 1000 * 60 * 60 * 60) // 2.5 days ago
-    },
-    {
-        id: 9,
-        content: "Lạm phát tại Mỹ có dấu hiệu giảm nhiệt. Nhà đầu tư kỳ vọng FED sẽ nới lỏng chính sách tiền tệ. Thị trường trái phiếu ghi nhận biến động lớn.",
-        publishedAt: new Date(Date.now() - 1000 * 60 * 60 * 72) // 3 days ago
-    },
-    {
-        id: 10,
-        content: "Thị trường bất động sản Việt Nam có dấu hiệu hồi phục. Giao dịch tăng mạnh tại các đô thị lớn. Cổ phiếu nhóm bất động sản dẫn đầu thị trường chứng khoán.",
-        publishedAt: new Date(Date.now() - 1000 * 60 * 60 * 96) // 4 days ago
-    }
-];
+import { type NewsItem, type NewsResponse, fetchNewsItems } from "@/services/newsService";
+import { NewsDialog } from "@/components/dialogs/NewsDialog";
 
 // Custom autoplay plugin
 const AutoplayPlugin = (interval = 3000) => {
@@ -104,6 +52,69 @@ const AutoplayPlugin = (interval = 3000) => {
 export default function MarketNews() {
     const [isMobile, setIsMobile] = useState(false);
     const [currentSlide, setCurrentSlide] = useState(0);
+    const [newsData, setNewsData] = useState<NewsItem[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [loadingMore, setLoadingMore] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+    const [page, setPage] = useState(1);
+    const [meta, setMeta] = useState<NewsResponse['meta'] | null>(null);
+    const [selectedNews, setSelectedNews] = useState<NewsItem | null>(null);
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+    // Fetch news data from API
+    useEffect(() => {
+        const getNews = async () => {
+            try {
+                // Set appropriate loading state based on whether this is initial load or loading more
+                if (page === 1) {
+                    setLoading(true);
+                } else {
+                    setLoadingMore(true);
+                }
+                
+                const response = await fetchNewsItems(page, 10);
+                
+                // If it's the first page, replace the data
+                // Otherwise append to existing data
+                if (page === 1) {
+                    setNewsData(response.data);
+                } else {
+                    setNewsData(prev => [...prev, ...response.data]);
+                }
+                
+                setMeta(response.meta);
+                setError(null);
+            } catch (err) {
+                console.error('Error fetching news:', err);
+                setError('Failed to load news data');
+            } finally {
+                setLoading(false);
+                setLoadingMore(false);
+            }
+        };
+
+        getNews();
+    }, [page]);
+
+    // Handle opening the news dialog
+    const handleOpenNewsDialog = useCallback((news: NewsItem) => {
+        setSelectedNews(news);
+        setIsDialogOpen(true);
+    }, []);
+
+    // Handle closing the news dialog
+    const handleCloseNewsDialog = useCallback(() => {
+        setIsDialogOpen(false);
+        // Give some time for animation to complete before removing the news data
+        setTimeout(() => setSelectedNews(null), 300);
+    }, []);
+
+    // Function to load more news
+    const handleLoadMore = useCallback(() => {
+        if (meta && page < meta.totalPages) {
+            setPage(prev => prev + 1);
+        }
+    }, [meta, page]);
 
     // Use callback to memoize the resize handler
     const checkScreenSize = useCallback(() => {
@@ -119,7 +130,7 @@ export default function MarketNews() {
     // Memoize slider options to prevent unnecessary recalculations
     const sliderOptions = useMemo(() => ({
         vertical: true, // Always vertical for both mobile and desktop
-        slides: { perView: isMobile ? 3 : 6, spacing: 12 },
+        slides: { perView: isMobile ? 2 : 3, spacing: 12 },
         loop: true,
         defaultAnimation: {
             duration: isMobile ? 1000 : 2000,
@@ -134,6 +145,23 @@ export default function MarketNews() {
         sliderOptions,
         [AutoplayPlugin(3000)]
     );
+
+    // If there's no data after loading, show a message
+    if (!loading && !error && newsData.length === 0) {
+        return (
+            <div className="w-full">
+                <div className="flex justify-between items-center mb-4">
+                    <h2 className="text-2xl font-bold mb-4 flex items-center">
+                        <span className="w-1.5 h-6 bg-primary mr-3 inline-block rounded-sm"></span>
+                        Tin tức Thị trường
+                    </h2>
+                </div>
+                <div className="bg-white p-8 text-center">
+                    <p className="text-gray-500">Không có tin tức nào.</p>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="w-full">
@@ -166,21 +194,35 @@ export default function MarketNews() {
                 </div>
             </div>
             <div className="bg-white overflow-hidden">
-                <div
-                    ref={sliderRef}
-                    className={`keen-slider ${isMobile ? 'h-[400px]' : 'h-[800px]'}`}
-                    aria-label="Market News Slider"
-                >
-                    {marketNewsData.map((news) => (
-                        <div key={news.id} className="keen-slider__slide">
-                            <NewsItem news={news} />
-                        </div>
-                    ))}
-                </div>
+                {loading && (
+                    <div className="h-[400px] flex items-center justify-center">
+                        <p className="text-gray-500">Loading news...</p>
+                    </div>
+                )}
+                
+                {error && (
+                    <div className="h-[400px] flex items-center justify-center">
+                        <p className="text-red-500">{error}</p>
+                    </div>
+                )}
+                
+                {!loading && !error && newsData.length > 0 && (
+                    <div
+                        ref={sliderRef}
+                        className={`keen-slider ${isMobile ? 'h-[400px]' : 'h-[800px]'}`}
+                        aria-label="Market News Slider"
+                    >
+                        {newsData.map((news) => (
+                            <div key={news.id} className="keen-slider__slide">
+                                <NewsItem news={news} onSelect={handleOpenNewsDialog} />
+                            </div>
+                        ))}
+                    </div>
+                )}
 
-                {instanceRef.current && (
+                {!loading && !error && newsData.length > 0 && instanceRef.current && (
                     <div className="flex justify-center mt-4 space-x-2">
-                        {[...Array(marketNewsData.length).keys()].map((idx) => {
+                        {[...Array(newsData.length).keys()].map((idx) => {
                             const isActive = currentSlide === idx;
                             return (
                                 <button
@@ -201,18 +243,51 @@ export default function MarketNews() {
                         })}
                     </div>
                 )}
+                
+                {!loading && !error && meta && page < meta.totalPages && (
+                    <div className="flex justify-center mt-6">
+                        <button 
+                            onClick={handleLoadMore}
+                            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors disabled:bg-blue-300"
+                            disabled={loadingMore}
+                        >
+                            {loadingMore ? 'Đang tải...' : 'Xem thêm tin tức'}
+                        </button>
+                    </div>
+                )}
             </div>
+
+            {/* News Dialog */}
+            <NewsDialog 
+                news={selectedNews} 
+                isOpen={isDialogOpen} 
+                onClose={handleCloseNewsDialog} 
+            />
         </div>
     );
 }
 
-function NewsItem({ news }: { news: { id: number; content: string; publishedAt: Date } }) {
+interface NewsItemProps {
+    news: NewsItem;
+    onSelect: (news: NewsItem) => void;
+}
+
+function NewsItem({ news, onSelect }: NewsItemProps) {
+    const handleClick = () => {
+        onSelect(news);
+    };
+
     return (
-        <div className="bg-neutral-50 p-4 rounded h-full hover:bg-gray-100 transition-colors">
-            <p className="text-sm text-gray-800 mb-3">{news.content}</p>
-            <p className="text-xs text-gray-500 mt-auto">
-                {formatDistanceToNow(news.publishedAt, { addSuffix: true })}
-            </p>
+        <div 
+            className="bg-neutral-50 p-4 rounded h-full hover:bg-gray-100 transition-colors cursor-pointer"
+            onClick={handleClick}
+        >
+            <p className="text-sm font-medium mb-2">{news.title}</p>
+            <p className="text-sm text-gray-800 mb-3">{news.summarizedContent}</p>
+            <div className="flex justify-between text-xs text-gray-500 mt-auto">
+                <span>{news.sourceWebsite}</span>
+                <span>{formatDistanceToNow(new Date(news.publishedAt), { addSuffix: true })}</span>
+            </div>
         </div>
     );
 } 

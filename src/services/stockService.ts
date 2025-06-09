@@ -1,5 +1,7 @@
-import { API_ENDPOINTS } from "@/config/api";
+import { API_BASE_URL, API_ENDPOINTS } from "@/config/api";
 import { FundamentalDataType } from "@/lib/mock-data";
+import { Stock, StockDetail, StockListResponse, StockDetailResponse, StockSearchParams } from "@/types/stock";
+import { StockDataParams, StockDataResponse } from '@/types/stockData';
 
 // Stock Profile Types
 export interface StockProfile {
@@ -61,16 +63,30 @@ export interface TradingRecommendation {
   updatedAt: string;
 }
 
-// F-Score Analysis Types
 export interface FScoreAnalysisRaw {
   id: string;
   symbol: string;
-  analysisDate: string;
-  inputData: any;
-  analysisResult: string;
-  tradingRecommendation: string;
-  suggestedBuyRange: string;
-  stopLossLevel: string;
+  year: number;
+  quarter: number;
+  roa: number;
+  deltaRoa: number;
+  cfo: number;
+  cfoMinusNetProfit: number;
+  deltaLongTermDebt: number;
+  deltaCurrentRatio: number;
+  newlyIssuedShares: number;
+  deltaGrossMargin: number;
+  deltaAssetTurnover: number;
+  roaPositive: boolean;
+  cfoPositive: boolean;
+  deltaRoaPositive: boolean;
+  cfoGreaterThanNetProfit: boolean;
+  deltaLongTermDebtNegative: boolean;
+  deltaCurrentRatioPositive: boolean;
+  noNewSharesIssued: boolean;
+  deltaGrossMarginPositive: boolean;
+  deltaAssetTurnoverPositive: boolean;
+  fScore: number;
   createdAt: string;
   updatedAt: string;
 }
@@ -103,6 +119,92 @@ export interface StockData {
     technicalAnalysis: any[];
   }
 }
+
+/**
+ * Stock service module
+ */
+export const stockService = {
+  /**
+   * Lấy danh sách chứng khoán với phân trang và tìm kiếm
+   */
+  async getStocks(params: StockSearchParams = {}): Promise<StockListResponse> {
+    const searchParams = new URLSearchParams();
+    
+    if (params.page) searchParams.append("page", params.page.toString());
+    if (params.limit) searchParams.append("limit", params.limit.toString());
+    if (params.search) searchParams.append("search", params.search);
+    if (params.exchange) searchParams.append("exchange", params.exchange);
+    if (params.industry) searchParams.append("industry", params.industry);
+    
+    const url = `${API_BASE_URL}/api/stocks?${searchParams.toString()}`;
+    const response = await fetch(url);
+    
+    if (!response.ok) {
+      throw new Error(`Error: ${response.status}`);
+    }
+    
+    return await response.json();
+  },
+  
+  /**
+   * Tìm kiếm cổ phiếu theo từ khóa
+   */
+  async searchStocks(query: string, limit: number = 5): Promise<Stock[]> {
+    try {
+      const response = await this.getStocks({
+        search: query,
+        limit: limit,
+        page: 1
+      });
+      return response.data;
+    } catch (error) {
+      console.error("Lỗi khi tìm kiếm cổ phiếu:", error);
+      return [];
+    }
+  },
+  
+  /**
+   * Lấy thông tin chi tiết của một mã chứng khoán
+   */
+  async getStockBySymbol(symbol: string): Promise<StockDetail> {
+    const response = await fetch(`${API_BASE_URL}/api/stocks/${symbol}`);
+    
+    if (!response.ok) {
+      throw new Error(`Error: ${response.status}`);
+    }
+    
+    const data: StockDetailResponse = await response.json();
+    return data.stock;
+  },
+
+  /**
+   * Fetches stock price data with indicators
+   */
+  async fetchStockPrices({
+    symbol,
+    startDate = '2023-01-01',
+    endDate = '2090-01-31',
+    page = 1,
+    limit = 99999
+  }: StockDataParams): Promise<StockDataResponse> {
+    // Using API_BASE_URL from config
+    const url = new URL(`${API_BASE_URL}/api/stock-prices/${symbol}`);
+    
+    // Add query parameters
+    url.searchParams.append('startDate', startDate);
+    url.searchParams.append('endDate', endDate);
+    url.searchParams.append('page', page.toString());
+    url.searchParams.append('limit', limit.toString());
+    
+    const response = await fetch(url.toString());
+    
+    if (!response.ok) {
+      throw new Error(`Failed to fetch stock data: ${response.statusText}`);
+    }
+    
+    return response.json();
+  }
+};
 
 /**
  * Fetches all stock data for a given stock symbol from a single API endpoint

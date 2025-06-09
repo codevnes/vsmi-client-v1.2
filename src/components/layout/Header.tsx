@@ -17,11 +17,11 @@ import { UserMenuDropdown } from "./header/UserMenuDropdown";
 import { AuthButtons } from "./header/AuthButtons";
 
 const navItems = [
-  { title: "Thị trường", href: "/market" },
-  { title: "Cổ phiếu", href: "/stocks" },
-  { title: "Tin tức", href: "/news" },
-  { title: "Phân tích", href: "/analysis" },
-  { title: "Công cụ", href: "/tools" },
+  { title: "Thị trường", href: "/market", isDevelopment: true },
+  { title: "Cổ phiếu", href: "/stocks", isDevelopment: true },
+  { title: "Tin tức", href: "/news", isDevelopment: true },
+  { title: "Phân tích", href: "/analysis", isDevelopment: true },
+  { title: "Công cụ", href: "/tools", isDevelopment: true },
 ];
 
 export function Header() {

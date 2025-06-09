@@ -4,6 +4,7 @@ import { TechnicalAnalysis } from "@/components/ui/technical-analysis";
 import { FinancialAnalysis } from "@/components/ui/financial-analysis";
 import { TradingRecommendation } from "@/components/ui/trading-recommendation";
 import { FScoreAnalysisContainer } from "@/components/FScoreAnalysisContainer";
+import { QindexChartWithTimeRange } from "@/components/charts/QindexChart";
 import { TECHNICAL_DATA } from "@/lib/mock-data";
 import { fetchStockData, extractStockProfile, extractFinancialIndicators, extractTradingRecommendation, extractFundamentalData } from "@/services/stockService";
 
@@ -35,20 +36,25 @@ export default async function SymbolPage({ params }: { params: { symbol: string 
       {/* Profile */}
       <StockProfile {...stockProfileData} />
 
+      {/* Stock Chart */}
+      <QindexChartWithTimeRange symbol={symbolUpperCase} timeRange="1y" />
+
       {/* Trading Recommendation */}
       {tradingRecommendationData && <TradingRecommendation {...tradingRecommendationData} />}
 
       {/* F-Score Analysis - The FScoreAnalysisContainer will now receive data from the context */}
       <FScoreAnalysisContainer symbol={symbolUpperCase} />
 
-      {/* Financial Analysis */}
-      <FinancialAnalysis data={financialData} symbol={symbolUpperCase} />
-
+     
       {/* Fundamental Analysis */}
       <FundamentalAnalysis {...fundamentalData} />
 
       {/* Technical Analysis */}
       <TechnicalAnalysis {...technicalData} />
+
+       {/* Financial Analysis */}
+       <FinancialAnalysis data={financialData} symbol={symbolUpperCase} />
+
     </div>
   );
 }

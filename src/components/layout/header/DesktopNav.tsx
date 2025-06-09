@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation';
 interface NavItem {
   title: string;
   href: string;
+  isDevelopment?: boolean;
 }
 
 interface DesktopNavProps {
@@ -28,7 +29,12 @@ export function DesktopNav({ navItems }: DesktopNavProps) {
               isActive ? 'text-blue-600' : ''
             }`}
           >
-            {item.title}
+            <div className="relative">
+              {item.title}
+              {item.isDevelopment && (
+                <span className="absolute -top-1 -right-1.5 w-1.5 h-1.5 bg-amber-500 rounded-full"></span>
+              )}
+            </div>
             <span className={`absolute bottom-0 left-0 w-full h-[2px] ${
               isActive ? 'bg-blue-600' : 'bg-transparent group-hover:bg-blue-600'
             } transition-colors`}></span>
