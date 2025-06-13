@@ -23,7 +23,7 @@ export function BestStocks() {
       try {
         setIsLoading(true);
         const response = await getSelectedStocks({ 
-          limit: 6,
+          limit: 20,
           sort: 'return',
           order: 'desc'
         });
