@@ -108,7 +108,7 @@ export function BestStocks() {
             const isPositive = stock.return > 0;
             const sparklineData = getSparklineData(stock.stockPrices);
             const isSparklinePositive = sparklineData.length > 1 && 
-              sparklineData[sparklineData.length - 1] > sparklineData[0];
+              sparklineData[sparklineData.length - 1] > sparklineData[sparklineData.length - 2];
             const trendColor = isPositive ? "text-green-600 dark:text-green-500" : "text-red-600 dark:text-red-500";
             const trendBgColor = isPositive ? "bg-green-50 dark:bg-green-950/40" : "bg-red-50 dark:bg-red-950/40";
             
