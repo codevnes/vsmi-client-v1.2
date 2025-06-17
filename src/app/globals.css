@@ -133,3 +133,6 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Import news content styles */
+@import '../styles/news-content.module.css';

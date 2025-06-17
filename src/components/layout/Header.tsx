@@ -19,7 +19,7 @@ import { AuthButtons } from "./header/AuthButtons";
 const navItems = [
   { title: "Thị trường", href: "/market", isDevelopment: true },
   { title: "Cổ phiếu", href: "/stocks", isDevelopment: true },
-  { title: "Tin tức", href: "/news", isDevelopment: true },
+  { title: "Tin tức", href: "/tin-tuc", isDevelopment: true },
   { title: "Phân tích", href: "/analysis", isDevelopment: true },
   { title: "Công cụ", href: "/tools", isDevelopment: true },
 ];
